@@ -1,0 +1,14 @@
+<<<<<<< HEAD
+<<<<<<< HEAD
+﻿Scaffold-DbContext "Data Source=.;Initial Catalog=DATN_ACV_DEV;Integrated Security=True; Encrypt=False;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Entity -Tables "tb_Account","tb_Cart","tb_CartDetail","tb_Category","tb_Customer","tb_CustomerVoucher","tb_FuntionForPermission","tb_Funtions","tb_GroupCustomer","tb_Image","tb_Invoice","tb_InvoiceDetail","tb_Order","tb_OrderDetail","tb_PaymentMethod","tb_Permission","tb_Policy","tb_Products","tb_Promotion","tb_Properties","tb_PropertiesDetail","tb_Supplier","tb_User","tb_UserFuntion","tb_Voucher","tb_Wallet","tb_Color","tb_Material" -Context DBContext -Force
+=======
+﻿Scaffold-DbContext "Data Source=.;Initial Catalog=DATN_ALB;Integrated Security=True; Encrypt=False;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Entity -Tables "tb_Account","tb_AdressDelivery","tb_Category","tb_Customer","tb_Image","tb_Invoice","tb_InvoiceDetail","tb_OderDetail","tb_Order","tb_PaymentMethod","tb_Products","tb_Voucher" -Context DBContext -Force
+>>>>>>> DA_CRUD_API
+=======
+﻿Scaffold-DbContext "Data Source=.;Initial Catalog=DATN_ALB;Integrated Security=True; Encrypt=False;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Entity -Tables "tb_Account","tb_AdressDelivery","tb_Category","tb_Customer","tb_Image","tb_Invoice","tb_InvoiceDetail","tb_OderDetail","tb_Order","tb_PaymentMethod","tb_Products","tb_Voucher" -Context DBContext -Force
+>>>>>>> DA_CRUD_API
+
+
+//
+Scaffold-DbContext "Data Source=.;Initial Catalog=DATN_ALB;Integrated Security=True; Encrypt=False;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Entity_ALB -Tables "tb_Account","tb_AdressDelivery","tb_Category","tb_Customers","tb_Image","tb_Invoice","tb_InvoiceDetail","tb_OderDetail","tb_Order","tb_PaymentMethod","tb_Products","tb_Voucher","tb_ReturnItem","tb_ExchangeItems" -Context DBContext -Force
+
