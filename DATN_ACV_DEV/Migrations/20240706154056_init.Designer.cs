@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DATN_ACV_DEV.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20240703144424_initproject")]
-    partial class initproject
+    [Migration("20240706154056_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,55 @@ namespace DATN_ACV_DEV.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("DATN_ACV_DEV.Entity.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ExpiresTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("tbAccountId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("tbAccountId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("DATN_ACV_DEV.Entity.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+                });
 
             modelBuilder.Entity("DATN_ACV_DEV.Entity_ALB.TbAccount", b =>
                 {
@@ -69,8 +118,8 @@ namespace DATN_ACV_DEV.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<Guid?>("UpdateBy")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("datetime");
@@ -81,6 +130,8 @@ namespace DATN_ACV_DEV.Migrations
                     b.HasIndex("AddressDeliveryId");
 
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("RoleId");
 
                     b.ToTable("tb_Account", (string)null);
                 });
@@ -639,6 +690,17 @@ namespace DATN_ACV_DEV.Migrations
                     b.ToTable("tb_Voucher", (string)null);
                 });
 
+            modelBuilder.Entity("DATN_ACV_DEV.Entity.RefreshToken", b =>
+                {
+                    b.HasOne("DATN_ACV_DEV.Entity_ALB.TbAccount", "tbAccount")
+                        .WithMany("refreshToken")
+                        .HasForeignKey("tbAccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("tbAccount");
+                });
+
             modelBuilder.Entity("DATN_ACV_DEV.Entity_ALB.TbAccount", b =>
                 {
                     b.HasOne("DATN_ACV_DEV.Entity_ALB.TbAdressDelivery", "AddressDelivery")
@@ -651,9 +713,17 @@ namespace DATN_ACV_DEV.Migrations
                         .HasForeignKey("CustomerId")
                         .HasConstraintName("FK_tb_Account_tb_Customers");
 
+                    b.HasOne("DATN_ACV_DEV.Entity.Role", "role")
+                        .WithMany("tbAccounts")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("AddressDelivery");
 
                     b.Navigation("Customer");
+
+                    b.Navigation("role");
                 });
 
             modelBuilder.Entity("DATN_ACV_DEV.Entity_ALB.TbExchangeItem", b =>
@@ -748,9 +818,16 @@ namespace DATN_ACV_DEV.Migrations
                     b.Navigation("OrderDetail");
                 });
 
+            modelBuilder.Entity("DATN_ACV_DEV.Entity.Role", b =>
+                {
+                    b.Navigation("tbAccounts");
+                });
+
             modelBuilder.Entity("DATN_ACV_DEV.Entity_ALB.TbAccount", b =>
                 {
                     b.Navigation("TbOrders");
+
+                    b.Navigation("refreshToken");
                 });
 
             modelBuilder.Entity("DATN_ACV_DEV.Entity_ALB.TbAdressDelivery", b =>

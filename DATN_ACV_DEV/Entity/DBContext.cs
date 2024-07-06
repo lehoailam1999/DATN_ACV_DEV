@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using DATN_ACV_DEV.Entity;
 using Microsoft.EntityFrameworkCore;
 
 namespace DATN_ACV_DEV.Entity_ALB;
 
-public partial class DBContext : DbContext
+public partial class DBContext : DbContext, IAppDbContext
 {
     public DBContext()
     {
@@ -42,6 +43,17 @@ public partial class DBContext : DbContext
     public virtual DbSet<TbReturnItem> TbReturnItems { get; set; }
 
     public virtual DbSet<TbVoucher> TbVouchers { get; set; }
+    public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
+    public virtual DbSet<Role> Roles { get; set; }
+    public async Task<int> CommitChangesAsync()
+    {
+        return await base.SaveChangesAsync();
+    }
+
+    public DbSet<TEntity> SetEntity<TEntity>() where TEntity : class
+    {
+        return base.Set<TEntity>();
+    }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
@@ -332,6 +344,21 @@ public partial class DBContext : DbContext
                 .HasForeignKey(d => d.OrderDetailId)
                 .HasConstraintName("FK_tb_ReturnItem_tb_OderDetail");
         });
+
+       /* modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_RefreshToken");
+
+            entity.ToTable("tb_RefreshToken");
+
+        });
+        modelBuilder.Entity<Role>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_Role");
+
+            entity.ToTable("tb_Role");
+
+        });*/
 
         modelBuilder.Entity<TbVoucher>(entity =>
         {
