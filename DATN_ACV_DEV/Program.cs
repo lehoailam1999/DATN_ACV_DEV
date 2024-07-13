@@ -54,10 +54,12 @@ builder.Services.AddSwaggerGen(c => {
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<IAccountServices, AccountServices>();
 builder.Services.AddScoped<IAccountRepositories, AccountRepositories>();
+builder.Services.AddScoped<IEmailServices, EmailServices>();
 
 builder.Services.AddTransient<IBaseRepositories<TbAccount>, BaseReposiroies<TbAccount>>();
 builder.Services.AddTransient<IBaseRepositories<Role>, BaseReposiroies<Role>>();
 builder.Services.AddTransient<IBaseRepositories<RefreshToken>, BaseReposiroies<RefreshToken>>();
+builder.Services.AddTransient<IBaseRepositories<ConfirmEmail>, BaseReposiroies<ConfirmEmail>>();
 
 builder.Services.AddScoped<IDbContext, DBContext>();
 builder.Services.AddScoped<ResponseObject<ResponseRegister>>();

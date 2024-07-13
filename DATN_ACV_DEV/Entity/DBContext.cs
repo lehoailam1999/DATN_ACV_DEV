@@ -45,6 +45,7 @@ public partial class DBContext : DbContext, IAppDbContext
     public virtual DbSet<TbVoucher> TbVouchers { get; set; }
     public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
     public virtual DbSet<Role> Roles { get; set; }
+    public virtual DbSet<ConfirmEmail> ConfirmEmails { get; set; }
     public async Task<int> CommitChangesAsync()
     {
         return await base.SaveChangesAsync();

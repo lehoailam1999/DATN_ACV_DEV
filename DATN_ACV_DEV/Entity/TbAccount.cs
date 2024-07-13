@@ -38,6 +38,7 @@ public partial class TbAccount
 
     public virtual TbCustomer? Customer { get; set; }
     public IEnumerable<RefreshToken>? refreshToken { get; set; }
+    public IEnumerable<ConfirmEmail>? confirmEmail { get; set; }
 
     public virtual ICollection<TbOrder> TbOrders { get; set; } = new List<TbOrder>();
 }

@@ -23,8 +23,10 @@ namespace DATN_ACV_DEV.Service.Services
         private readonly IAccountRepositories _accountRepositories;
         private readonly IConfiguration _configuration;
         private readonly IBaseRepositories<RefreshToken> _baseRefreshRepositories;
+        private readonly IEmailServices _emailServices;
+        private readonly IBaseRepositories<ConfirmEmail> _baseConfirmRepositories;
 
-        public AccountServices(ResponseObject<ResponseRegister> response, ConverterAccount converter, IBaseRepositories<TbAccount> baseRepositories, IBaseRepositories<Role> baseRolesRepositories, IAccountRepositories accountRepositories, IConfiguration configuration, IBaseRepositories<RefreshToken> baseRefreshRepositories)
+        public AccountServices(ResponseObject<ResponseRegister> response, ConverterAccount converter, IBaseRepositories<TbAccount> baseRepositories, IBaseRepositories<Role> baseRolesRepositories, IAccountRepositories accountRepositories, IConfiguration configuration, IBaseRepositories<RefreshToken> baseRefreshRepositories, IEmailServices emailServices, IBaseRepositories<ConfirmEmail> baseConfirmRepositories)
         {
             _response = response;
             _converter = converter;
@@ -33,6 +35,8 @@ namespace DATN_ACV_DEV.Service.Services
             _accountRepositories = accountRepositories;
             _configuration = configuration;
             _baseRefreshRepositories = baseRefreshRepositories;
+            _emailServices = emailServices;
+            _baseConfirmRepositories = baseConfirmRepositories;
         }
 
         public string GennerateRefreshToKen()
@@ -106,11 +110,13 @@ namespace DATN_ACV_DEV.Service.Services
             }
             return response.ResponseSuccess("Đăng nhập thành công!", await GenerateAccessToken(user));
         }
-    
+
 
         public async Task<ResponseObject<ResponseRegister>> Register(RequestRegister request)
         {
+
             TbAccount account = new TbAccount();
+            account.Id = new Guid();
             var userWithUserName = await _accountRepositories.GetAccountByUsername(request.Name);
             if (userWithUserName != null)
             {
@@ -149,11 +155,187 @@ namespace DATN_ACV_DEV.Service.Services
             account.RoleId = 1;
             account.CustomerId = request.CustomerId;
             account.AddressDeliveryId = request.AddressDeliveryId;
-            account.UpdateDate= DateTime.Now;
+            account.UpdateDate = DateTime.Now;
             account.CreateDate = DateTime.Now;
             account.IsDelete = "1";
             await _baseRepositories.AddAsync(account);
+            Random rand = new Random();
+            int randomNumber = rand.Next(1000, 10000);
+            string confirmationToken = randomNumber.ToString();
+            ConfirmEmail confirmEmail = new ConfirmEmail
+            {
+                AccountId = account.Id,
+                CodeActive = confirmationToken,
+                ExpiredTime = DateTime.UtcNow.AddHours(24),
+                IsConfirm = false
+            };
+            await _baseConfirmRepositories.AddAsync(confirmEmail);
+            string subject = "Test";
+            string body = "Xin chào :" + confirmationToken;
+            string emailResult = _emailServices.SendEmail(account.Email, subject, body);
             return _response.ResponseSuccess("Register successfully", await _converter.EntityToDTO(account));
+        }
+        public async Task<ResponseObject<ConfirmEmail>> ConfirmEmail(string code)
+        {
+            ResponseObject<ConfirmEmail> _response = new ResponseObject<ConfirmEmail>();
+            var confirmEmail = await _accountRepositories.GetConfirmEmailByCode(code);
+
+            if (confirmEmail == null)
+            {
+                return _response.ResponseError(StatusCodes.Status400BadRequest, "Mã xác nhận không hợp lệ ", null);
+            }
+            if (confirmEmail.ExpiredTime <= DateTime.UtcNow)
+            {
+                return _response.ResponseError(StatusCodes.Status404NotFound, "Mã xác nhận đã hết hạn hoặc người dùng không tồn tại", null);
+            }
+
+            var user = await _baseRepositories.FindAsync(confirmEmail.AccountId);
+            if (user == null)
+            {
+                return _response.ResponseError(StatusCodes.Status404NotFound, "Mã xác nhận đã hết hạn hoặc người dùng không tồn tại", null);
+            }
+
+            await _baseRepositories.UpdateAsync(user);
+            // Update ConfirmEmail
+            confirmEmail.IsConfirm = true;
+            await _baseConfirmRepositories.UpdateAsync(confirmEmail);
+
+            return _response.ResponseSuccess("Xác nhận email thành công", null);
+        }
+        public async Task<ResponseObject<string>> ForgotPassword(string email)
+        {
+            var userWithEmail = await _accountRepositories.GetEmailByUsername(email);
+            if (userWithEmail == null)
+            {
+                return new ResponseObject<string>
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Message = "Email chưa được đăng kí!!!!",
+                    Data = null
+                };
+            }
+            var cofirmithUserId = await _accountRepositories.GetConfirmEmailByAccountId(userWithEmail.Id);
+            bool delete = await _baseConfirmRepositories.DeleteAsync(cofirmithUserId.Id);
+            if (delete == true)
+            {
+                Random rand = new Random();
+                int randomNumber = rand.Next(1000, 10000);
+                string confirmationToken = randomNumber.ToString();
+                ConfirmEmail confirm = new ConfirmEmail
+                {
+                    AccountId = userWithEmail.Id,
+                    CodeActive = confirmationToken,
+                    ExpiredTime = DateTime.UtcNow.AddHours(24),
+                    IsConfirm = false
+                };
+                await _baseConfirmRepositories.AddAsync(confirm);
+                string subject = "Forgot Password";
+                string body = "Mã xác nhận là :" + confirmationToken;
+                string emailResult = _emailServices.SendEmail(email, subject, body);
+                return new ResponseObject<string>
+                {
+                    Status = StatusCodes.Status200OK,
+                    Message = $"{emailResult}!Mời bạn kiểm tra email của bạn!",
+                    Data = null
+                };
+            }
+            else
+            {
+                return new ResponseObject<string>
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Message = "Gửi mã OTP tới email của bạn đã bị gián đoạn",
+                    Data = null
+                };
+            }
+        }
+        public async Task<string> ChangePassWord(int id, Request_ChangePassword request)
+        {
+            var user = await _baseRepositories.FindAsync(id);
+            if (user == null)
+            {
+                return "Bạn không đăng trong phiên đăn nhập";
+            }
+            bool checkPassword = BcryptNet.Verify(request.OldPassword, user.Password);
+            if (!checkPassword)
+            {
+                return "Incorrect password";
+            }
+            if (!request.NewPassword.Equals(request.ConfirmPassword))
+            {
+                return "Password do not macth";
+            }
+            user.Password = BcryptNet.HashPassword(request.NewPassword);
+            await _baseRepositories.UpdateAsync(user);
+            return "Change password success";
+        }
+        public async Task<ResponseObject<string>> ConfirmCreateNewPasWord(Request_NewPassWord request)
+        {
+            var confiremEmail = await _accountRepositories.GetConfirmEmailByConFirmCode(request.ConfirmCode);
+            if (confiremEmail == null)
+            {
+                return new ResponseObject<string>
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Message = "Mã xác nhận không đúng",
+                    Data = null
+                };
+            }
+            if (!request.Password.Equals(request.ConfirmPassword))
+            {
+                return new ResponseObject<string>
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Message = "Mật khẩu không trùng khớp",
+                    Data = null
+                };
+            }
+            var user = await _baseRepositories.FindAsync(confiremEmail.AccountId);
+            user.Password = BcryptNet.HashPassword(request.Password);
+            await _baseRepositories.UpdateAsync(user);
+            confiremEmail.IsConfirm = true;
+            await _baseConfirmRepositories.UpdateAsync(confiremEmail);
+            return new ResponseObject<string>
+            {
+                Status = StatusCodes.Status200OK,
+                Message = "Tạo mật khẩu mới thành công",
+                Data = null
+            };
+
+
+        }
+        public async Task<string> ReNewCode(string email)
+        {
+            var userWithEmail = await _accountRepositories.GetEmailByUsername(email);
+            if (userWithEmail == null)
+            {
+                return "Email don't exists!!!!";
+            }
+            var cofirmithUserId = await _accountRepositories.GetConfirmEmailByAccountId(userWithEmail.Id);
+            bool delete = await _baseConfirmRepositories.DeleteAsync(cofirmithUserId.Id);
+            if (delete == true)
+            {
+                Random rand = new Random();
+                int randomNumber = rand.Next(1000, 10000);
+
+                string confirmationToken = randomNumber.ToString();
+                ConfirmEmail confirm = new ConfirmEmail
+                {
+                    AccountId = userWithEmail.Id,
+                    CodeActive = confirmationToken,
+                    ExpiredTime = DateTime.UtcNow.AddHours(24),
+                    IsConfirm = false
+                };
+                await _baseConfirmRepositories.AddAsync(confirm);
+                string subject = "Renew Password";
+                string body = "Mã xác nhận là :" + confirmationToken;
+                string emailResult = _emailServices.SendEmail(email, subject, body);
+                return $"{emailResult}! Mời bạn kiểm tra Email";
+            }
+            else
+            {
+                return "Bạn chưa gửi được mã xác nhận";
+            }
         }
     }
 }
