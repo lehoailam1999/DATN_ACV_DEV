@@ -153,11 +153,11 @@ namespace DATN_ACV_DEV.Utility
                     model.DiscountVoucher = voucher.Discount;
                 }
             }
-            if (voucher.Type == Utility.VOUCHER_FREESHIP)
-            {
-                model.DiscountShipping = voucher.Discount;
+            //if (voucher.Type == Utility.VOUCHER_FREESHIP)
+            //{
+            //    model.DiscountShipping = voucher.Discount;
 
-            }
+            //}
             return model;
         }
         public static GHNCreateOrderDTO CreateOderGHN(RequestCreateOrderGHN req)

@@ -3,6 +3,6 @@
     public class CalculateVoucher 
     {
         public decimal? DiscountVoucher { get; set; }
-        public decimal? DiscountShipping { get; set;}
+        //public decimal? DiscountShipping { get; set;}
     }
 }

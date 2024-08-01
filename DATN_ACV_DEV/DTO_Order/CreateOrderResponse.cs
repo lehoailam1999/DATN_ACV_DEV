@@ -1,21 +1,25 @@
-﻿using DATN_ACV_DEV.FileBase;
+﻿using DATN_ACV_DEV.Model_DTO.Order_DTO;
 
-namespace DATN_ACV_DEV.Model_DTO.Order_DTO
+namespace DATN_ACV_DEV.DTO_Order
 {
-    public class CreateOrderRequest : BaseRequest
+    public class CreateOrderResponse
     {
-        public List<Guid> cartDetailID { get; set; }
+        public CreateOrderResponse()
+        {
+            products = new List<OrderProduct>();
+        }
+        public List<OrderProduct> products { get; set; }
+        public decimal? totalAmountDiscount { get; set; }
+        public decimal? amountShip { get; set; }
+        public string? addressDelivery { get; set; }
+        public decimal? totalAmount { get; set; }
+        public string? paymentMethod { get; set; }
+        public string? voucherCodes { get; set; }
         public string? description { get; set; }
-        public List<Guid>? voucherID { get; set; }
-        public Guid? paymentMenthodID { get; set; }
-        public Guid? AddressDeliveryId { get; set; }
-        public string TokenGHN { get; set; }
-
     }
     public class OrderProduct
     {
         public Guid productId { get; set; }
-        public Guid categoryId { get; set; }
         public string productName { get; set; }
         public string productCode { get; set; }
         public decimal? price { get; set; }
