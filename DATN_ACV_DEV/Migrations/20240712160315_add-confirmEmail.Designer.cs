@@ -4,6 +4,7 @@ using DATN_ACV_DEV.Entity_ALB;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DATN_ACV_DEV.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20240712160315_add-confirmEmail")]
+    partial class addconfirmEmail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,7 +53,7 @@ namespace DATN_ACV_DEV.Migrations
 
                     b.HasIndex("tbAccountId");
 
-                    b.ToTable("ConfirmEmails");
+                    b.ToTable("ConfirmEmail");
                 });
 
             modelBuilder.Entity("DATN_ACV_DEV.Entity.RefreshToken", b =>

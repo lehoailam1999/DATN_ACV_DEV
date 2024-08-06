@@ -6,11 +6,25 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DATN_ACV_DEV.Migrations
 {
     /// <inheritdoc />
-    public partial class initproject : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Roles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Code = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RoleName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Roles", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "tb_AdressDelivery",
                 columns: table => new
@@ -186,14 +200,20 @@ namespace DATN_ACV_DEV.Migrations
                     CreateBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreateDate = table.Column<DateTime>(type: "datetime", nullable: true),
                     IsDelete = table.Column<string>(type: "nchar(10)", fixedLength: true, maxLength: 10, nullable: false),
-                    UpdateBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UpdateDate = table.Column<DateTime>(type: "datetime", nullable: true),
                     CustomerID = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    AddressDeliveryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    AddressDeliveryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    RoleId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Account", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_tb_Account_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_tb_Account_tb_AdressDelivery",
                         column: x => x.AddressDeliveryId,
@@ -232,6 +252,28 @@ namespace DATN_ACV_DEV.Migrations
                         column: x => x.ProductID,
                         principalTable: "tb_Products",
                         principalColumn: "ID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RefreshTokens",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ExpiresTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AccountId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    tbAccountId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RefreshTokens_tb_Account_tbAccountId",
+                        column: x => x.tbAccountId,
+                        principalTable: "tb_Account",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -336,6 +378,11 @@ namespace DATN_ACV_DEV.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_RefreshTokens_tbAccountId",
+                table: "RefreshTokens",
+                column: "tbAccountId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_tb_Account_AddressDeliveryId",
                 table: "tb_Account",
                 column: "AddressDeliveryId");
@@ -344,6 +391,11 @@ namespace DATN_ACV_DEV.Migrations
                 name: "IX_tb_Account_CustomerID",
                 table: "tb_Account",
                 column: "CustomerID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tb_Account_RoleId",
+                table: "tb_Account",
+                column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tb_ExchangeItems_OrderDetailId",
@@ -400,6 +452,9 @@ namespace DATN_ACV_DEV.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "RefreshTokens");
+
+            migrationBuilder.DropTable(
                 name: "tb_ExchangeItems");
 
             migrationBuilder.DropTable(
@@ -434,6 +489,9 @@ namespace DATN_ACV_DEV.Migrations
 
             migrationBuilder.DropTable(
                 name: "tb_Category");
+
+            migrationBuilder.DropTable(
+                name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "tb_AdressDelivery");
