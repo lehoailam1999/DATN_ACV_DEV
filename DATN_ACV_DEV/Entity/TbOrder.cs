@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DATN_ACV_DEV.Entity_ALB;
 
@@ -32,6 +33,9 @@ public partial class TbOrder
     public Guid? AcountId { get; set; }
 
     public Guid? PaymentMethodId { get; set; }
+
+    [ForeignKey("BillStatusId")]
+    public int BillStatusId { get; set; }
 
     public virtual TbAccount? Acount { get; set; }
 

@@ -12,6 +12,7 @@ namespace DATN_ACV_DEV.Entity
         public DateTime ExpiredTime { get; set; }
         public string CodeActive { get; set; }
         public bool IsConfirm { get; set; } = false;
+
         [ForeignKey("AccountId")]
         public Guid AccountId { get; set; }
         public TbAccount tbAccount { get; set; }

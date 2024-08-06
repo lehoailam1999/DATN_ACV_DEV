@@ -116,7 +116,7 @@ namespace DATN_ACV_DEV.Service.Services
         {
 
             TbAccount account = new TbAccount();
-            account.Id = new Guid();
+            account.Id = Guid.NewGuid();
             var userWithUserName = await _accountRepositories.GetAccountByUsername(request.Name);
             if (userWithUserName != null)
             {
@@ -254,7 +254,7 @@ namespace DATN_ACV_DEV.Service.Services
             var user = await _baseRepositories.FindAsync(id);
             if (user == null)
             {
-                return "Bạn không đăng trong phiên đăn nhập";
+                throw Http;
             }
             bool checkPassword = BcryptNet.Verify(request.OldPassword, user.Password);
             if (!checkPassword)

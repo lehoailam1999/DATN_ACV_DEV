@@ -17,6 +17,7 @@ public partial class DBContext : DbContext, IAppDbContext
     }
 
     public virtual DbSet<TbAccount> TbAccounts { get; set; }
+    public virtual DbSet<BillStatus> BillStatuses { get; set; }
 
     public virtual DbSet<TbAdressDelivery> TbAdressDeliveries { get; set; }
 
