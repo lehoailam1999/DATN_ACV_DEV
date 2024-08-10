@@ -57,8 +57,12 @@ builder.Services.AddScoped<IAccountRepositories, AccountRepositories>();
 builder.Services.AddScoped<IEmailServices, EmailServices>();
 builder.Services.AddScoped<IVnPayServices, VnPayServices>();
 builder.Services.AddScoped<IBillServices, BillServices>();
+builder.Services.AddScoped<IProductServices, ProductServices>();
+
 
 builder.Services.AddTransient<IBaseRepositories<TbAccount>, BaseReposiroies<TbAccount>>();
+builder.Services.AddTransient<IBaseRepositories<TbProduct>, BaseReposiroies<TbProduct>>();
+
 builder.Services.AddTransient<IBaseRepositories<Role>, BaseReposiroies<Role>>();
 builder.Services.AddTransient<IBaseRepositories<TbOrder>, BaseReposiroies<TbOrder>>();
 builder.Services.AddTransient<IBaseRepositories<RefreshToken>, BaseReposiroies<RefreshToken>>();
@@ -66,9 +70,13 @@ builder.Services.AddTransient<IBaseRepositories<ConfirmEmail>, BaseReposiroies<C
 
 builder.Services.AddScoped<IDbContext, DBContext>();
 builder.Services.AddScoped<ResponseObject<ResponseRegister>>();
+builder.Services.AddScoped<ResponseObject<Response_Product>>();
+
 builder.Services.AddScoped<ResponseObject<ResponseBill>>();
 builder.Services.AddScoped<ConverterAccount>();
 builder.Services.AddScoped<Converter_Order>();
+builder.Services.AddScoped<Converter_Product>();
+
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

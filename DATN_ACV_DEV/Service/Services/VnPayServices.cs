@@ -52,8 +52,8 @@ namespace DATN_ACV_DEV.Service.Services
                     vnpay.AddResponseData(key, value.ToString());
                 }
             }
-            var vnp_orderId = Convert.ToInt64(vnpay.GetResponseData("vnp_TxnRef"));
-            var vnp_TransactionId = Convert.ToInt64(vnpay.GetResponseData("vnp_TransactionNo"));
+             var vnp_orderId =vnpay.GetResponseData("vnp_TxnRef");
+            var vnp_TransactionId = vnpay.GetResponseData("vnp_TransactionNo");
             var vnp_SecureHash = collections.FirstOrDefault(p => p.Key == "vnp_SecureHash").Value;
             var vnp_ResponseCode = vnpay.GetResponseData("vnp_ResponseCode");
             var vnp_OrderInfo = vnpay.GetResponseData("vnp_OrderInfo");
@@ -72,8 +72,8 @@ namespace DATN_ACV_DEV.Service.Services
                 Success = true,
                 PaymentMethod = "VnPay",
                 OrderDescription = vnp_OrderInfo,
-                OrderId = vnp_orderId.ToString(),
-                TransactionId = vnp_TransactionId.ToString(),
+                OrderId = vnp_orderId,
+                TransactionId = vnp_TransactionId,
                 Token = vnp_SecureHash,
                 VnPayResponseCode = vnp_ResponseCode,
             };

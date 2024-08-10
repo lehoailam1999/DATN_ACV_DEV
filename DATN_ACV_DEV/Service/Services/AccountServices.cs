@@ -254,7 +254,7 @@ namespace DATN_ACV_DEV.Service.Services
             var user = await _baseRepositories.FindAsync(id);
             if (user == null)
             {
-                throw Http;
+                return "Ko tim thay us";
             }
             bool checkPassword = BcryptNet.Verify(request.OldPassword, user.Password);
             if (!checkPassword)

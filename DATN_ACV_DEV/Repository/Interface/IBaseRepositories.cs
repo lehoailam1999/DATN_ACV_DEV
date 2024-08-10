@@ -9,6 +9,8 @@ namespace DATN_ACV_DEV.Repository.Interface
         Task<TEntity> AddAsync(TEntity entity);
         Task<TEntity> FindAsync(params Object[] keyValues);
         Task<TEntity> GetByIdAsync(int id);
+        Task<TEntity> GetByGuidIdAsync(Guid id);
+
         Task<bool> DeleteAsync(int id);
         Task<bool> DeleteObjAsync(TEntity entity);
 

@@ -155,5 +155,10 @@ namespace DATN_ACV_DEV.Repository.Implement
         {
             return await DBSet.FindAsync(id);
         }
+
+        public async Task<TEntity> GetByGuidIdAsync(Guid id)
+        {
+            return await DBSet.FindAsync(id);
+        }
     }
 }
