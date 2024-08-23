@@ -4,6 +4,7 @@ using DATN_ACV_DEV.Entity_ALB;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DATN_ACV_DEV.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20240712160315_add-confirmEmail")]
+    partial class addconfirmEmail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,23 +24,6 @@ namespace DATN_ACV_DEV.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("DATN_ACV_DEV.Entity.BillStatus", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("BillStatuses");
-                });
 
             modelBuilder.Entity("DATN_ACV_DEV.Entity.ConfirmEmail", b =>
                 {
@@ -67,7 +53,7 @@ namespace DATN_ACV_DEV.Migrations
 
                     b.HasIndex("tbAccountId");
 
-                    b.ToTable("ConfirmEmails");
+                    b.ToTable("ConfirmEmail");
                 });
 
             modelBuilder.Entity("DATN_ACV_DEV.Entity.RefreshToken", b =>
@@ -493,9 +479,6 @@ namespace DATN_ACV_DEV.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("AcountID");
 
-                    b.Property<int>("BillStatusId")
-                        .HasColumnType("int");
-
                     b.Property<Guid?>("CreateBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -539,8 +522,6 @@ namespace DATN_ACV_DEV.Migrations
                         .HasName("PK_Order");
 
                     b.HasIndex("AcountId");
-
-                    b.HasIndex("BillStatusId");
 
                     b.HasIndex("PaymentMethodId");
 
@@ -841,12 +822,6 @@ namespace DATN_ACV_DEV.Migrations
                         .HasForeignKey("AcountId")
                         .HasConstraintName("FK_tb_Order_tb_Account");
 
-                    b.HasOne("DATN_ACV_DEV.Entity.BillStatus", null)
-                        .WithMany("tbOrder")
-                        .HasForeignKey("BillStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("DATN_ACV_DEV.Entity_ALB.TbPaymentMethod", "PaymentMethod")
                         .WithMany("TbOrders")
                         .HasForeignKey("PaymentMethodId")
@@ -883,11 +858,6 @@ namespace DATN_ACV_DEV.Migrations
                         .HasConstraintName("FK_tb_ReturnItem_tb_OderDetail");
 
                     b.Navigation("OrderDetail");
-                });
-
-            modelBuilder.Entity("DATN_ACV_DEV.Entity.BillStatus", b =>
-                {
-                    b.Navigation("tbOrder");
                 });
 
             modelBuilder.Entity("DATN_ACV_DEV.Entity.Role", b =>
