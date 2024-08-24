@@ -20,7 +20,7 @@ namespace DATN_ACV_DEV.Controllers.Order
         private BaseResponse<DTO_Order.CreateOrderResponse> _res;
         private DTO_Order.CreateOrderResponse _response;
         private string _apiCode = "CreateOrder";
-
+        // đã đẩy code Oder
         private TbAccount account;
         private TbCustomer customer;
         private TbAdressDelivery addressDelivery;
