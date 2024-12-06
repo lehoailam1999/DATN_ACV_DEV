@@ -2,10 +2,10 @@
 {
     public class ShoppingResponse
     {
-        public Guid id { get; set; }
-        public string orderCode { get; set; }
-        public decimal? totalAmount { get; set; }
-        public decimal amountShip { get; set; }
-        public OrderProduct product { get; set; }
+        //public Guid id { get; set; }
+        //public string orderCode { get; set; }
+        //public decimal? totalAmount { get; set; }
+        //public decimal amountShip { get; set; }
+        //public OrderProduct product { get; set; }
     }
 }
